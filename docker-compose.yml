@@ -1,4 +1,26 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_app
+    restart: always
+    env_file: .env
+    # Это гарантирует, что app начнет запуск только ПОСЛЕ успешного healthcheck базы
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      # Если uv создает какие-то локальные папки в /app, которые не нужны на хосте:
+      # - /app/.venv 
+    networks:
+      - backend_network
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+
   database:
     image: postgres:17
     container_name: database
@@ -14,7 +36,7 @@ services:
       - backend_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -q -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
+      interval: 5s   # Ускорим проверку для старта
       timeout: 5s
       retries: 5
     volumes:
