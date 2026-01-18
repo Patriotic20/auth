@@ -20,6 +20,7 @@ class UserView(ModelView, model=User):
 
     form_excluded_columns = [
         # "roles",
+        "student",
         "created_at",
         "updated_at",
     ]
