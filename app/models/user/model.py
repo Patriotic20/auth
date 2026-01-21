@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from models.role.model import Role
-    from models.user_role.model import UserRole
+    from models.student.model import Student
 
 class User(Base, IdIntPk, TimestampMixin):
     __tablename__ = "users"

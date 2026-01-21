@@ -20,7 +20,7 @@ router = APIRouter(
 async def create_role(
     data: RoleCreateRequest,
     session: AsyncSession = Depends(db_helper.session_getter),
-    _: PermissionRequired = Depends(PermissionRequired("create:role")) 
+    # _: PermissionRequired = Depends(PermissionRequired("create:role")) 
 ):
     return await get_role_repository.create_role(session=session, data=data)
 

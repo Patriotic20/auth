@@ -10,8 +10,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from models.user.model import User
     from models.permission.model import Permission
-    from models.user_role.model import UserRole
-    from models.role_permission.model import RolePermission
 
 
 class Role(Base, IdIntPk, TimestampMixin):
