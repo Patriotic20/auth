@@ -2,9 +2,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import APIKeyHeader 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 import jwt
 from jwt import PyJWTError
-
 from core.config import settings
 from models.user.model import User
 from models.role.model import Role
@@ -40,22 +40,45 @@ async def get_current_user_id(token: str = Depends(api_key_header)):
             detail="Could not validate credentials"
         )
 
+
 class PermissionRequired:
     def __init__(self, permission_name: str):
         self.permission_name = permission_name
-
+    
     async def __call__(
         self, 
         user_id: int = Depends(get_current_user_id), 
         session: AsyncSession = Depends(db_helper.session_getter)
-    ) -> User:  # Теперь возвращаем модель User
+    ) -> User:
+        # Загружаем пользователя с ролями один раз
+        user_stmt = (
+            select(User)
+            .where(User.id == user_id)
+            .options(selectinload(User.roles))
+        )
+        result = await session.execute(user_stmt)
+        user = result.scalar_one_or_none()
         
-        # 1. Проверяем существование разрешения и создаем, если его нет
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        # Проверяем, является ли пользователь админом
+        is_admin = any(role.name == "admin" for role in user.roles)
+        
+        if is_admin:
+            return user  # Админ имеет доступ ко всему
+        
+        # Для не-админов проверяем конкретное разрешение
+        # 1. Проверяем существование разрешения
         perm_stmt = select(Permission).where(Permission.name == self.permission_name)
         perm_result = await session.execute(perm_stmt)
         perm_obj = perm_result.scalar_one_or_none()
-
+        
         if not perm_obj:
+            # Создаем разрешение, если его нет
             perm_obj = Permission(name=self.permission_name)
             session.add(perm_obj)
             await session.commit()
@@ -64,25 +87,22 @@ class PermissionRequired:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Permission '{self.permission_name}' created. Assign it to a role."
             )
-
-        # 2. Проверяем наличие права у пользователя И загружаем данные пользователя
-        # Используем JOIN для проверки, но выбираем (select) саму сущность User
-        stmt = (
-            select(User)
-            .join(UserRole)
-            .join(Role)
+        
+        # 2. Проверяем наличие права у пользователя
+        perm_check_stmt = (
+            select(Permission.id)
             .join(RolePermission)
-            .join(Permission)
+            .join(Role)
+            .join(UserRole)
             .where(
-                User.id == user_id,
+                UserRole.user_id == user_id,
                 Permission.name == self.permission_name
             )
         )
+        perm_check_result = await session.execute(perm_check_stmt)
+        has_permission = perm_check_result.scalar_one_or_none()
         
-        result = await session.execute(stmt)
-        user = result.scalar_one_or_none()
-
-        if not user:
+        if not has_permission:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Access denied: user lacks '{self.permission_name}' permission"

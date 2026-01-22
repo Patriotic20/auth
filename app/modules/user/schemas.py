@@ -34,8 +34,6 @@ class UserCreateRequest(BaseModel):
 
 class UserUpdateRequest(BaseModel):
     username: str | None = None
-    password: str | None = None
-    roles: list[str] | None = None
 
 class UserCreateResponse(BaseModel):
     id: int

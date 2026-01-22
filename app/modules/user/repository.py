@@ -107,7 +107,7 @@ class UserRepository:
         )
 
     async def update_user(self, session: AsyncSession, user_id: int, data: UserUpdateRequest) -> User:
-        stmt = select(User).where(User.id == user_id).options(selectinload(User.roles))
+        stmt = select(User).where(User.id == user_id)
         result = await session.execute(stmt)
         user = result.scalar_one_or_none()
 
@@ -117,15 +117,9 @@ class UserRepository:
         # Частичное обновление через Request схему
         if data.username is not None:
             user.username = data.username
-        if data.password is not None:
-            user.password = data.password
-        if data.roles is not None:
-            stmt_roles = select(Role).where(Role.name.in_(data.roles))
-            new_roles = (await session.execute(stmt_roles)).scalars().all()
-            user.roles = new_roles
 
         await session.commit()
-        await session.refresh(user, attribute_names=['roles'])
+        await session.refresh(user)
         return user
 
     async def delete_user(self, session: AsyncSession, user_id: int) -> None:

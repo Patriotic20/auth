@@ -10,6 +10,7 @@ from sqladmin import Admin
 from middleware.admin_auth import AdminAuth
 from fastapi.middleware.cors import CORSMiddleware
 
+
 app = FastAPI()
 authentication_backend = AdminAuth(secret_key=settings.admin.secret_key)
 
