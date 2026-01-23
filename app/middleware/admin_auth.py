@@ -1,7 +1,7 @@
+from core.config import settings
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
-from starlette.responses import RedirectResponse
-from core.config import settings
+
 
 class AdminAuth(AuthenticationBackend):
     async def login(self, request: Request) -> bool:
@@ -13,7 +13,7 @@ class AdminAuth(AuthenticationBackend):
             # ВАЖНО: Записываем токен или флаг в сессию
             request.session.update({"token": "some-secret-token"})
             return True
-        
+
         return False
 
     async def logout(self, request: Request) -> bool:

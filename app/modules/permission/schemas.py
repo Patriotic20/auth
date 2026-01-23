@@ -1,5 +1,7 @@
-from pydantic import BaseModel, ConfigDict
 from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict
+
 
 class PermissionCreateRequest(BaseModel):
     name: str
@@ -28,11 +30,9 @@ class PermissionListRequest(BaseModel):
     def offset(self) -> int:
         return (self.page - 1) * self.limit
 
+
 class PermissionListResponse(BaseModel):
     total: int
     page: int
     limit: int
     permissions: list[PermissionCreateResponse]
-
-
-

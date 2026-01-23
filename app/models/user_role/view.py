@@ -1,5 +1,5 @@
-from sqladmin import ModelView
 from models.user_role.model import UserRole
+from sqladmin import ModelView
 
 
 class UserRoleView(ModelView, model=UserRole):

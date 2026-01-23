@@ -1,9 +1,8 @@
+from models.role.model import Role
 from sqladmin import ModelView
-from models.role.model import Role  
 
 
 class RoleView(ModelView, model=Role):
-
     column_list = (
         "id",
         "name",
@@ -19,13 +18,9 @@ class RoleView(ModelView, model=Role):
         "updated_at": Role.updated_at,
     }
 
-    column_searchable_list = (
-        "name",
-    )
+    column_searchable_list = ("name",)
 
-    column_editable_list = (
-        "name",
-    )
+    column_editable_list = ("name",)
 
     column_sortable_list = (
         "id",
@@ -42,5 +37,3 @@ class RoleView(ModelView, model=Role):
         "created_at",
         "updated_at",
     ]
-
- 

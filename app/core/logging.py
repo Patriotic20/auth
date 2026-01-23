@@ -1,18 +1,12 @@
 import logging
 import os
-from logging.handlers import TimedRotatingFileHandler
 from datetime import datetime
+from logging.handlers import TimedRotatingFileHandler
 
 # --- Base setup ---
 LOG_DIR = "logs"
 LEVELS = ["debug", "info", "warning", "error", "critical"]
-RETENTION_DAYS = {
-    "debug": 5,
-    "info": 7,
-    "warning": 30,
-    "error": 30,
-    "critical": 30
-}
+RETENTION_DAYS = {"debug": 5, "info": 7, "warning": 30, "error": 30, "critical": 30}
 
 # Ensure log folders exist
 for level in LEVELS:
@@ -22,20 +16,22 @@ for level in LEVELS:
 # --- Formatters ---
 detailed_formatter = logging.Formatter(
     "%(asctime)s | %(levelname)-8s | %(name)s | %(filename)s:%(lineno)d | %(funcName)s() | %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
 
 console_formatter = logging.Formatter(
-    "%(asctime)s | %(levelname)-8s | %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
+    "%(asctime)s | %(levelname)-8s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
 )
 
-debug_formatter = logging.Formatter("%(levelname)s | %(name)s | %(message)s")  # no timestamp
+debug_formatter = logging.Formatter(
+    "%(levelname)s | %(name)s | %(message)s"
+)  # no timestamp
 
 
 # --- Filters per level ---
 class LevelFilter(logging.Filter):
     """Filter logs by level name."""
+
     def __init__(self, level_name):
         super().__init__()
         self.level_name = level_name.upper()
@@ -66,7 +62,7 @@ for level in LEVELS:
         when="midnight",
         interval=1,
         backupCount=RETENTION_DAYS[level],
-        encoding="utf-8"
+        encoding="utf-8",
     )
     handler.setLevel(getattr(logging, level.upper()))
     handler.addFilter(LevelFilter(level))  # only this level

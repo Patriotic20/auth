@@ -1,12 +1,12 @@
 from typing import AsyncGenerator
 
+from core.config import settings
 from sqlalchemy.ext.asyncio import (
-    create_async_engine,
+    AsyncEngine,
     AsyncSession,
     async_sessionmaker,
-    AsyncEngine,
+    create_async_engine,
 )
-from core.config import settings
 
 
 class DatabaseHelper:
@@ -18,7 +18,6 @@ class DatabaseHelper:
         pool_size: int = 5,
         max_overflow: int = 10,
     ) -> None:
-
         self.engine: AsyncEngine = create_async_engine(
             url=url,
             echo=echo,

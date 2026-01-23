@@ -1,9 +1,8 @@
-from sqladmin import ModelView
 from models.role_permission.model import RolePermission
+from sqladmin import ModelView
 
 
 class RolePermissionView(ModelView, model=RolePermission):
-
     column_list = (
         RolePermission.id,
         RolePermission.role_id,

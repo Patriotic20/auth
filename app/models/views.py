@@ -1,11 +1,10 @@
-from sqladmin import Admin
-
+from models.permission.view import PermissionView
 from models.role.view import RoleView
+from models.role_permission.view import RolePermissionView
+from models.student.view import StudentView
 from models.user.view import UserView
 from models.user_role.view import UserRoleView
-from models.role_permission.view import RolePermissionView
-from models.permission.view import PermissionView
-from models.student.view import StudentView
+from sqladmin import Admin
 
 
 def register_models(admin: Admin):

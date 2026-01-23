@@ -1,37 +1,33 @@
 from fastapi import HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
-
 from models.role.model import Role
-from .schemas import (
-    RoleCreateRequest,
-    RoleListRequest,
-    RoleListResponse
-)
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from .schemas import RoleCreateRequest, RoleListRequest, RoleListResponse
+
 
 class RoleRepository:
-    
     async def create_role(self, session: AsyncSession, data: RoleCreateRequest) -> Role:
         # Проверка на существование роли с таким именем
         stmt_check = select(Role).where(Role.name == data.name)
         result_check = await session.execute(stmt_check)
         if result_check.scalar_one_or_none():
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail=f"Role '{data.name}' already exists"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Role '{data.name}' already exists",
             )
 
         new_role = Role(name=data.name)
         session.add(new_role)
-        
+
         try:
             await session.commit()
             await session.refresh(new_role)
         except Exception:
             await session.rollback()
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-                detail="Database error"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Database error",
             )
         return new_role
 
@@ -41,11 +37,15 @@ class RoleRepository:
         role = result.scalar_one_or_none()
 
         if not role:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Role not found")
-        
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Role not found"
+            )
+
         return role
 
-    async def list_roles(self, session: AsyncSession, request: RoleListRequest) -> RoleListResponse:
+    async def list_roles(
+        self, session: AsyncSession, request: RoleListRequest
+    ) -> RoleListResponse:
         stmt = select(Role).offset(request.offset).limit(request.limit)
         result = await session.execute(stmt)
         roles = result.scalars().all()
@@ -55,20 +55,21 @@ class RoleRepository:
         total = total_result.scalar() or 0
 
         return RoleListResponse(
-            total=total,
-            page=request.page,
-            limit=request.limit,
-            roles=roles
+            total=total, page=request.page, limit=request.limit, roles=roles
         )
 
-    async def update_role(self, session: AsyncSession, role_id: int, data: RoleCreateRequest) -> Role:
+    async def update_role(
+        self, session: AsyncSession, role_id: int, data: RoleCreateRequest
+    ) -> Role:
         # Получаем текущую роль из базы
         stmt = select(Role).where(Role.id == role_id)
         result = await session.execute(stmt)
         role = result.scalar_one_or_none()
 
         if not role:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Role not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Role not found"
+            )
 
         # Логика обновления "как в User" (явная проверка полей)
         if data.name is not None:
@@ -77,8 +78,8 @@ class RoleRepository:
             existing_role = (await session.execute(stmt_check)).scalar_one_or_none()
             if existing_role:
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, 
-                    detail="Role name already taken"
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Role name already taken",
                 )
             role.name = data.name
 
@@ -92,7 +93,9 @@ class RoleRepository:
         role = result.scalar_one_or_none()
 
         if not role:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Role not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Role not found"
+            )
 
         await session.delete(role)
         await session.commit()

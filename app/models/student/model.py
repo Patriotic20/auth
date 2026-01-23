@@ -1,22 +1,24 @@
-from models.base import Base
-from models.mixins.time_stamp_mixin import TimestampMixin
-from models.mixins.id_int_pk import IdIntPk
-
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from typing import TYPE_CHECKING
+
+from models.base import Base
+from models.mixins.id_int_pk import IdIntPk
+from models.mixins.time_stamp_mixin import TimestampMixin
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     from models.user.model import User
 
 
-from sqlalchemy import String, Date, Float, Integer, ForeignKey
+from sqlalchemy import Date, Float, ForeignKey, Integer, String
+
 
 class Student(Base, TimestampMixin, IdIntPk):
     __tablename__ = "students"
 
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+
     full_name: Mapped[str] = mapped_column(String)
     student_id_number: Mapped[str] = mapped_column(String)
     image_path: Mapped[str] = mapped_column(String)
@@ -36,6 +38,5 @@ class Student(Base, TimestampMixin, IdIntPk):
     semester: Mapped[str] = mapped_column(String)
     address: Mapped[str] = mapped_column(String)
     avg_gpa: Mapped[float] = mapped_column(Float)
-    
 
     user: Mapped["User"] = relationship("User", back_populates="student")

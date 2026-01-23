@@ -1,23 +1,24 @@
-from pydantic import BaseModel, PostgresDsn
-from pydantic_settings import SettingsConfigDict, BaseSettings
 from dotenv import load_dotenv
-
+from pydantic import BaseModel, PostgresDsn
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
 
+
 class ServerConfig(BaseModel):
     app_path: str
-    host: str 
+    host: str
     port: int
     reload: bool = True
-    
-    
+
+
 class JwtConfig(BaseModel):
     access_token_secret: str
     refresh_token_secret: str
     access_token_expires_minutes: int
     refresh_token_expires_days: int
     algorithm: str
+
 
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
@@ -35,22 +36,25 @@ class DatabaseConfig(BaseModel):
         "pk": "pk_%(table_name)s",
     }
 
+
 class AdminConfig(BaseModel):
     username: str
     password: str
     secret_key: str
 
+
 class FileUrl(BaseModel):
     http: str
     upload_dir: str
 
+
 class HemisConfig(BaseModel):
     base_url: str
-    
+
 
 class RedisConfig(BaseModel):
-    host: str 
-    port: int 
+    host: str
+    port: int
     prefix: str
 
     @property
@@ -58,13 +62,14 @@ class RedisConfig(BaseModel):
         """Собирает URL для подключения к Redis"""
         return f"redis://{self.host}:{self.port}/0"
 
+
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=False,
         env_nested_delimiter="__",
         env_prefix="APP_CONFIG__",
-        extra="ignore"
+        extra="ignore",
     )
 
     server: ServerConfig
@@ -74,7 +79,6 @@ class AppConfig(BaseSettings):
     hemis: HemisConfig
     # file_url: FileUrl
     # redis: RedisConfig
-
 
 
 settings = AppConfig()

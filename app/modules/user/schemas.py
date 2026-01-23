@@ -1,6 +1,7 @@
-from pydantic import BaseModel, field_validator, ConfigDict 
-from core.utils.password_hash import hash_password
 from datetime import datetime
+
+from core.utils.password_hash import hash_password
+from pydantic import BaseModel, ConfigDict, field_validator
 
 
 class RoleResponse(BaseModel):
@@ -12,6 +13,7 @@ class RoleResponse(BaseModel):
 
 class RoleRequest(BaseModel):
     name: str
+
 
 class UserCreateRequest(BaseModel):
     username: str
@@ -31,9 +33,9 @@ class UserCreateRequest(BaseModel):
         return hash_password(value.strip())
 
 
-
 class UserUpdateRequest(BaseModel):
     username: str | None = None
+
 
 class UserCreateResponse(BaseModel):
     id: int
@@ -54,12 +56,14 @@ class UserListRequest(BaseModel):
     def offset(self) -> int:
         return (self.page - 1) * self.limit
 
+
 class UserListResponse(BaseModel):
     total: int
     page: int
     limit: int
     users: list[UserCreateResponse]
-    
+
+
 class UserLoginRequest(BaseModel):
     username: str
     password: str
@@ -69,13 +73,14 @@ class UserLoginRequest(BaseModel):
         if not value.strip():
             raise ValueError("Username cannot be empty")
         return value.strip()
-    
+
     @field_validator("password", mode="before")
     def validate_password(cls, value: str) -> str:
         if not value.strip():
             raise ValueError("Password cannot be empty")
         return value.strip()
-    
+
+
 class UserLoginResponse(BaseModel):
     type: str = "Bearer"
     access_token: str

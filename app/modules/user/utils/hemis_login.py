@@ -1,10 +1,7 @@
-from .schemas import UserLoginRequest
-from sqlalchemy.ext.asyncio import AsyncSession
 from core.config import settings
-import httpx
+from sqlalchemy.ext.asyncio import AsyncSession
 
-
-
+from .schemas import UserLoginRequest
 
 
 class HemisLoginService:
@@ -13,11 +10,8 @@ class HemisLoginService:
 
     async def login(self, credentials: UserLoginRequest):
         response = await client.post(
-            settings.hemis.base_url,
-            data=credentials.dict(),
-            headers=headers
+            settings.hemis.base_url, data=credentials.dict(), headers=headers
         )
-
 
     async def map_student_data(self):
         api_data = self.login()
@@ -59,6 +53,6 @@ class HemisLoginService:
 
     async def create_or_update_user(self, user_data: dict):
         pass
-        
+
 
 hemis_login_service = HemisLoginService(session=db_helper.session_getter)

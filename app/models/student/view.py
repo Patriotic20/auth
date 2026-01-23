@@ -1,9 +1,9 @@
 from markupsafe import Markup
-from sqladmin import ModelView
 from models.student.model import Student
+from sqladmin import ModelView
+
 
 class StudentView(ModelView, model=Student):
-    
     # Список колонок в таблице
     column_list = [
         "id",
@@ -20,7 +20,9 @@ class StudentView(ModelView, model=Student):
     column_formatters = {
         "image_path": lambda m, a: Markup(
             f'<img src="/{m.image_path}" width="50" height="50" style="border-radius: 50%; object-fit: cover;">'
-        ) if m.image_path else "No Photo"
+        )
+        if m.image_path
+        else "No Photo"
     }
 
     # Поиск и сортировка

@@ -1,5 +1,7 @@
-from pydantic import BaseModel, ConfigDict
 from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict
+
 
 class RoleCreateRequest(BaseModel):
     name: str
@@ -28,9 +30,9 @@ class RoleListRequest(BaseModel):
     def offset(self) -> int:
         return (self.page - 1) * self.limit
 
+
 class RoleListResponse(BaseModel):
     total: int
     page: int
     limit: int
     roles: list[RoleCreateResponse]
-

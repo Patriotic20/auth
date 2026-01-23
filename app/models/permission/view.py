@@ -1,8 +1,8 @@
+from models.permission.model import Permission
 from sqladmin import ModelView
-from models.permission.model import Permission  
+
 
 class PermissionView(ModelView, model=Permission):
-
     column_list = (
         "id",
         "name",
@@ -18,13 +18,9 @@ class PermissionView(ModelView, model=Permission):
         "updated_at": Permission.updated_at,
     }
 
-    column_searchable_list = (
-        "name",
-    )
+    column_searchable_list = ("name",)
 
-    column_editable_list = (
-        "name",
-    )
+    column_editable_list = ("name",)
 
     column_sortable_list = (
         "id",
@@ -41,5 +37,3 @@ class PermissionView(ModelView, model=Permission):
         "created_at",
         "updated_at",
     ]
-
-    
