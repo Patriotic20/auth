@@ -1,0 +1,21 @@
+stages:          # List of stages for jobs, and their order of execution
+  - build
+  - test
+  - deploy
+
+build-job:
+  stage: build
+  script:    
+    - docker pull postgres:17
+    - docker build -t my-backend-image:latest .
+
+test-job:
+    stage: test
+    script: 
+    - docker run --rm my-backend-image pytest -s -v
+
+
+deploy-job:
+    stage: deploy
+    script:
+    - docker compose up -d
