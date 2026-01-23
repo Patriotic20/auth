@@ -1,7 +1,12 @@
 from core.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import HTTPException, status
+from datetime import datetime
+from httpx import AsyncClient
 
-from .schemas import UserLoginRequest
+from core.db_helper import db_helper
+
+from user.schemas import UserLoginRequest
 
 
 class HemisLoginService:
@@ -9,9 +14,15 @@ class HemisLoginService:
         self.session = session
 
     async def login(self, credentials: UserLoginRequest):
-        response = await client.post(
-            settings.hemis.base_url, data=credentials.dict(), headers=headers
-        )
+        headers = {
+            "Content-Type": "application/json"
+        }
+        async with AsyncClient() as client:
+            response = await client.post(
+                settings.hemis.base_url, data=credentials.model_dump(), headers=headers
+            )
+            return response.json().get("data", {})
+        
 
     async def map_student_data(self):
         api_data = self.login()
@@ -51,8 +62,8 @@ class HemisLoginService:
                     detail="birth_date is invalid in API response",
                 )
 
-    async def create_or_update_user(self, user_data: dict):
-        pass
+    # async def create_or_update_user(self, user_data: dict):
+    #     pass
 
 
 hemis_login_service = HemisLoginService(session=db_helper.session_getter)
