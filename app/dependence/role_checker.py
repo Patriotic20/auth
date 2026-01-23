@@ -81,7 +81,10 @@ class PermissionRequired:
             await session.refresh(perm_obj)
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Permission '{self.permission_name}' created. Assign it to a role.",
+                detail=(
+                    f"Permission '{self.permission_name}' created. "
+                    "Assign it to a role."
+                ),
             )
 
         # 2. Проверяем наличие права у пользователя

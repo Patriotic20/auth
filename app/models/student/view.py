@@ -16,10 +16,11 @@ class StudentView(ModelView, model=Student):
         "student_status",
     ]
 
-    # Красивое отображение фото в таблице
+
     column_formatters = {
         "image_path": lambda m, a: Markup(
-            f'<img src="/{m.image_path}" width="50" height="50" style="border-radius: 50%; object-fit: cover;">'
+            f'<img src="/{m.image_path}" width="50" height="50" '
+            f'style="border-radius: 50%; object-fit: cover;">'
         )
         if m.image_path
         else "No Photo"

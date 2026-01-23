@@ -15,7 +15,10 @@ for level in LEVELS:
 
 # --- Formatters ---
 detailed_formatter = logging.Formatter(
-    "%(asctime)s | %(levelname)-8s | %(name)s | %(filename)s:%(lineno)d | %(funcName)s() | %(message)s",
+    (
+        "%(asctime)s | %(levelname)-8s | %(name)s | "
+        "%(filename)s:%(lineno)d | %(funcName)s() | %(message)s"
+    ),
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 

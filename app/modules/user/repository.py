@@ -37,7 +37,8 @@ class UserRepository:
                     detail="One or more roles not found",
                 )
 
-        # Создаем пользователя. Пароль уже захэширован внутри UserCreateRequest (field_validator)
+        # Создаем пользователя. Пароль уже захэширован 
+        # внутри UserCreateRequest (field_validator)
         new_user = User(username=data.username, password=data.password, roles=roles)
 
         session.add(new_user)
@@ -92,7 +93,8 @@ class UserRepository:
 
         # 3. Возвращаем UserListResponse, используя данные из моделей.
         # Чтобы UserCreateResponse (внутри списка) корректно обработал роли,
-        # в схеме UserCreateResponse нужно будет добавить преобразование списка объектов в список строк.
+        # в схеме UserCreateResponse нужно будет добавить преобразование 
+        # списка объектов в список строк.
         return UserListResponse(
             total=total,
             page=request.page,
