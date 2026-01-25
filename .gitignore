@@ -8,3 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+.vscode/
+.idea/
+
+.logfire/
+logfire.toml

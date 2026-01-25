@@ -7,9 +7,14 @@ from middleware.admin_auth import AdminAuth
 from models.views import register_models
 from modules.router import router
 from sqladmin import Admin
+import logfire
 
 app = FastAPI()
 authentication_backend = AdminAuth(secret_key=settings.admin.secret_key)
+
+
+logfire.configure()
+logfire.instrument_fastapi(app)
 
 
 app.add_middleware(
